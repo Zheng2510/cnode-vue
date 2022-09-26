@@ -17,8 +17,9 @@
             </div>
             <div>
                 <div class="topbar">回复</div>
-                <div v-for="(reply,index) in post.replies" :key="index"></div>
-                <img :src="reply.author.avatar_url"><!--//图片要动态绑定否则显示不了-->
+                <div v-for="(reply,index) in post.replies" :key="index">
+                    <img :src="reply.author.avatar_url"><!--//图片要动态绑定否则显示不了-->
+                </div>
             </div>
         </div>
     </div>
@@ -38,7 +39,7 @@
                 this.$http.get(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}`)
                     .then(res=>{
                  if(res.data.success == true){
-                     this.isLoading = false,
+                     this.isLoading = false
                      this.post = res.data.data
                  }
                     })

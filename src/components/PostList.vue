@@ -16,7 +16,7 @@
                         <span>招聘</span>
                     </div>
                 </li>
-                <li v-for="post in posts" :key="post">
+                <li v-for="post in posts" :key="post.id">
                     <!--posts表示本页存储的所有列表数组-->
                     <!--头像-->
                     <img :src="post.author.avatar_url">
