@@ -1,5 +1,5 @@
 <template>
-    <div calss="article">
+    <div class="article">
         <!--如果加载显示此div-->
         <div class="loading" v-if="isLoading">
             <img src="../assets/loading.gif">
@@ -8,17 +8,42 @@
             <div class="topic_header">
                 <div class="topic_title">{{post.title}}</div>
                 <ul>
-                    <li>*发布于:{{post.create_at | formatDate}}</li>
+                    <li>*<发布></发布>于:{{post.create_at | formatDate}}</li>
                     <li>*作者: {{post.author.loginname}}</li>
                     <li>*{{post.visit_count}}次浏览</li>
                     <li>*来自{{ post | tabFormatter}}</li>
                 </ul>
                 <div v-html="post.content" class="topic_content"></div>
             </div>
-            <div>
+            <div id="reply">
                 <div class="topbar">回复</div>
-                <div v-for="(reply,index) in post.replies" :key="index">
-                    <img :src="reply.author.avatar_url"><!--//图片要动态绑定否则显示不了-->
+                <div v-for="(reply,index) in post.replies" :key="index" class="replySec">
+                    <div class="replyUp">
+                        <router-link :to="{
+                        name:'user_info',
+                        params:{
+                        name:reply.author.loginname
+                        }
+                        }">
+                            <img :src="reply.author.avatar_url"><!--//图片要动态绑定否则显示不了-->
+                        </router-link>
+                        <router-link :to="{
+                        name:'user_info',
+                        params:{
+                        name:reply.author.loginname
+                        }
+                        }">
+                            <span>{{reply.author.loginname}}</span>
+                        </router-link>
+
+                        <span> {{index+1}}楼</span>
+                        <span v-if="reply.ups.length>0">
+                         ☝{{reply.ups.length}}
+                    </span>
+                        <span v-else>
+                    </span>
+                    </div>
+                    <p v-html="reply.content"></p>
                 </div>
             </div>
         </div>
@@ -37,13 +62,13 @@
         methods: {
             getArticleData() {
                 this.$http.get(`https://cnodejs.org/api/v1/topic/${this.$route.params.id}`)
-                    .then(res=>{
-                 if(res.data.success == true){
-                     this.isLoading = false
-                     this.post = res.data.data
-                 }
+                    .then(res => {
+                        if (res.data.success == true) {
+                            this.isLoading = false
+                            this.post = res.data.data
+                        }
                     })
-                    .catch(err=>{
+                    .catch(err => {
                         console.log(err)
                     })
             },
@@ -52,6 +77,11 @@
         beforeMount() {
             this.isLoading = true;
             this.getArticleData();
+        },
+        watch:{//检测路由变化
+            '$route'(to,from){
+                this.getArticleData()
+            }
         }
     }
 </script>
@@ -72,7 +102,7 @@
         margin-top: 15px;
     }
 
-    #reply, .topic_header {
+    #reply,.topic_header {
         background-color: #fff;
     }
 

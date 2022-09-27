@@ -35,7 +35,8 @@
                     <!-- 标题-->
                     <router-link :to="{name:'post_count',
                     params:{
-                        id:post.id
+                        id:post.id,
+                        name:post.author.loginname
                     }
                     }"><!--请求一个名字为post_count的路由-->
 
@@ -47,35 +48,50 @@
                     <!--    最终回复时间-->
                     <span class="last_reply">{{post.last_reply_at | formatDate}}</span>
                 </li>
+                <li>
+                    <Pagination @handleList="renderList"></Pagination>
+                </li>
             </ul>
         </div>
     </div>
 </template>
 
 <script>
+    import Pagination from "@/components/Pagination";
+
     export default {
         name: "PostList",
         data() {
             return {
                 isLoading: false,
                 posts: [],//代表页面的列表数组
-
+                postpage:1
             }
         },
+        components: {
+            Pagination
+        },
         methods: {
-            getData() {
+            getData() {//GET请求一一定要加params参数
                 this.$http.get('https://cnodejs.org/api/v1/topics', {
-                    page: 1,
-                    limit: 20,
+                    params:{
+                        page: this.postpage,
+                        limit: 20,
+                    }
+
                 })
                     .then(res => {//eslint-disable-line no-unused-vars
                         this.isLoading = false//加载成功就关闭动画
                         this.posts = res.data.data; //把值复制给post
                     })/*处理成功之后的方法*/
                     .catch(function (err) {
-//处理返回失败后的问题
+                      //处理返回失败后的问题
                         console.log(err)
                     })
+            },
+            renderList(value) {//这个方法必须接受一个参数,这个参数从子组件传递过来
+               this.postpage = value;
+               this.getData();
             }
         },
         //这个方法在页面载入前就开始执行
